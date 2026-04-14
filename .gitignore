@@ -3,5 +3,6 @@ welcome_home/db.sqlite3
 welcome_home/media/
 welcome_home/.venv/
 welcome_home/__pycache__/
+welcome_home/staticfiles/
 *.pyc
 *.log
