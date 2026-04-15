@@ -72,7 +72,7 @@ def _send_email_verification_otp(user):
         ),
         from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@welcomehome.local'),
         recipient_list=[user.email],
-        fail_silently=False,
+        fail_silently=True,  # Prevents SMTP timeout in console backend
     )
 
 
@@ -99,7 +99,7 @@ def _send_password_reset_otp(user):
         ),
         from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@welcomehome.local'),
         recipient_list=[user.email],
-        fail_silently=False,
+        fail_silently=True,
     )
 
 
@@ -390,7 +390,7 @@ def login_view(request):
                     message=f'Your verification code is: {code}',
                     from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@welcomehome.local'),
                     recipient_list=[user.email],
-                    fail_silently=False,
+                    fail_silently=True,
                 )
 
                 create_audit_log(
