@@ -1,5 +1,5 @@
 import json
-import google.generativeai as genai
+# import google.generativeai as genai  # Lazy loaded below
 # from google.generativeai.types import GenerateContentConfig as ContentConfig
 
 from django.conf import settings
@@ -80,6 +80,7 @@ def property_list(request):
     # AI guide only (no examples)
     if query and getattr(settings, 'GEMINI_API_KEY', None):
         try:
+            import google.generativeai as genai
             genai.configure(api_key=settings.GEMINI_API_KEY)
             model = genai.GenerativeModel('gemini-2.5-flash')
             prompt = f"""You are a real estate assistant for students in Manila. User search: "{query}"
