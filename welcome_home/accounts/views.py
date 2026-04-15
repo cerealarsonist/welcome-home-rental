@@ -101,6 +101,7 @@ def _send_password_reset_otp(user):
         recipient_list=[user.email],
         fail_silently=True,
     )
+    print(f"🔑 PASSWORD RESET OTP for {user.email}: {code}")
 
 
 # ========================
