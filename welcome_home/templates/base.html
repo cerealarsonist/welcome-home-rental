@@ -225,11 +225,13 @@
             display: block !important;
         }
 
+
         .stride-tooltip {
             top: calc(100% + 8px);
-            left: 50%;
-            transform: translateX(-50%);
+            right: 0;
+            transform: none;
         }
+
 
         .stride-header {
             font-weight: 800;
@@ -300,7 +302,7 @@
 
         .stride-status:not(.status-green) {
             position: relative;
-            cursor: help;
+            cursor: pointer;
         }
 
         .stride-status:not(.status-green):hover .threat-tooltip {
@@ -412,8 +414,7 @@
                     <option value="system">System</option>
                 </select>
             </li>
-            <li>
-            <div class="stride-wrapper" style="position: relative;">
+
                 <div class="stride-badge" id="strideIcon" title="Click for STRIDE Security Status">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
@@ -511,93 +512,86 @@
 
 <main class="main-wrapper">
     {% block content %}{% endblock %}
+
 </main>
 
 <script>
-    const themeSelect = document.getElementById("themeSelect");
     if (themeSelect) {
         const savedTheme = localStorage.getItem("theme") || "system";
         themeSelect.value = savedTheme;
-
-        themeSelect.addEventListener("change", function () {
-            localStorage.setItem("theme", this.value);
-            document.documentElement.setAttribute("data-theme", this.value);
-        });
+        themeSelect.addEventListener("change", function () { 
+            localStorage.setItem("theme", this.value); 
+            document.documentElement.setAttribute("data-theme", this.value); 
+        }); 
     }
 
-    // STRIDE Security Scanner
-    const strideWrapper = document.querySelector('.stride-wrapper');
+    // STRIDE Security Scanner - Clean hover + click expand
     const strideIcon = document.getElementById('strideIcon');
-    const tooltip = strideWrapper.querySelector('#strideTooltip');
-    if (strideIcon && tooltip) {
-        strideIcon.addEventListener('mouseenter', () => {
-            tooltip.style.display = 'block';
-            runStrideScan();
-        });
-        strideIcon.addEventListener('mouseleave', () => {
-            setTimeout(() => {
-                if (!tooltipVisible) tooltip.style.display = 'none';
-            }, 200);
-        });
-        strideIcon.addEventListener('click', (e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            tooltipVisible = !tooltipVisible;
-            tooltip.style.display = tooltipVisible ? 'block' : 'none';
-            if (tooltipVisible) runStrideScan();
-        });
-
-        document.addEventListener('click', (e) => {
-            if (!strideWrapper.contains(e.target)) {
-                tooltipVisible = false;
-                tooltip.style.display = 'none';
-            }
-        });
-
-        let tooltipVisible = false;
-
-        function showTooltip() {
-            tooltipVisible = true;
-            tooltip.style.display = 'block';
-            runStrideScan();
-        }
-
-        function toggleTooltip() {
-            tooltipVisible = !tooltipVisible;
-            tooltip.style.display = tooltipVisible ? 'block' : 'none';
-        }
-
-        function hideTooltip() {
-            tooltipVisible = false;
-            tooltip.style.display = 'none';
-        }
-
+    const strideTooltip = document.getElementById('strideTooltip');
+    
     function runStrideScan() {
         const statuses = {
             spoofing: location.protocol === 'https:' ? 'status-green' : 'status-red',
             tampering: !!document.querySelector('[integrity]') ? 'status-green' : 'status-orange',
             repudiation: 'status-green',
             disclosure: location.protocol === 'https:' ? 'status-green' : 'status-red',
-            dos: navigator.connection && navigator.connection.effectiveType !== 'slow-2g' ? 'status-green' : 'status-orange',
+            dos: navigator.connection?.effectiveType !== 'slow-2g' ? 'status-green' : 'status-orange',
             elevation: 'status-green'
         };
-
+        
         Object.entries(statuses).forEach(([threat, status]) => {
             const el = document.getElementById(threat + '-status');
             if (el) {
                 el.className = `stride-status ${status}`;
-                el.textContent = status.includes('green') ? '✓ Secure' : (status.includes('orange') ? '⚠ Warning' : '✗ Compromised');
+                el.textContent = status.includes('green') ? '✓ Secure' : status.includes('orange') ? '⚠ Warning' : '✗ Compromised';
             }
         });
-
+        
         const hasIssues = Object.values(statuses).some(s => !s.includes('green'));
         strideIcon.classList.toggle('compromised', hasIssues);
     }
 
-        // Initial scan on load
-        runStrideScan();
+
+    let tooltipVisible = false;
+    
+    // Badge hover + click toggle
+    if (strideIcon && strideTooltip) {
+        strideIcon.addEventListener('mouseenter', () => { 
+            if (!tooltipVisible) strideTooltip.style.display = 'block'; 
+        });
+        strideIcon.addEventListener('mouseleave', () => { 
+            if (!tooltipVisible) strideTooltip.style.display = 'none'; 
+        });
+        strideIcon.addEventListener('click', e => {
+            e.stopPropagation();
+            tooltipVisible = !tooltipVisible;
+            strideTooltip.style.display = tooltipVisible ? 'block' : 'none';
+            runStrideScan();
+        });
     }
+
+
+    // Status hover → threat tooltip, click → toggle expand
+    document.addEventListener('click', e => {
+        const status = e.target.closest('.stride-status:not(.status-green)');
+        if (status) {
+            const tooltip = status.querySelector('.threat-tooltip');
+            tooltip.style.display = tooltip.style.display === 'block' ? 'none' : 'block';
+            e.stopPropagation();
+        }
+    });
+
+    // Hide STRIDE on outside click
+    document.addEventListener('click', e => {
+        if (!strideIcon.contains(e.target)) {
+            strideTooltip.style.display = 'none';
+        }
+    });
+
+    // Initial scan
+    runStrideScan();
 </script>
 
 </body>
 </html>
+

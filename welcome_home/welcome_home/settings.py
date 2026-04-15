@@ -7,7 +7,7 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-fallback-key")
-DEBUG = False
+DEBUG = True  # TEMP DEV OVERRIDE - change back to False for production
 ALLOWED_HOSTS = ["welcome-home-fxye.onrender.com", "localhost", "127.0.0.1"]
 
 INSTALLED_APPS = [
