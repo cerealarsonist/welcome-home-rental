@@ -17,7 +17,7 @@ services:
         generateValue: true
       - key: FIELD_ENCRYPTION_KEY
         generateValue: true
-      - key: GEMINI_API_KEY
+      - key: AIzaSyCQTv_MzIXfuuDIpipjT56r2b8BmWLbizE
         generateValue: false # Add your key
       - key: PYTHON_VERSION
         value: "3.12.x"
