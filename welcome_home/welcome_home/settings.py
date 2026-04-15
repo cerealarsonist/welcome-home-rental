@@ -138,7 +138,7 @@ MAX_UPLOAD_SIZE_MB = 5
 
 EMAIL_BACKEND = os.getenv(
     'EMAIL_BACKEND',
-    'django.core.mail.backends.console.EmailBackend'
+    'django.core.mail.backends.console.EmailBackend'  # Render: logs to stdout
 )
 DEFAULT_FROM_EMAIL = os.getenv(
     'DEFAULT_FROM_EMAIL',
