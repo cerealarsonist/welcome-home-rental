@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: welcome-home
+    env: python
+    plan: free
+    buildCommand: |
+      cd welcome_home && pip install -r requirements.txt
+    startCommand: |
+      cd welcome_home && python manage.py collectstatic --no-input &&
+      python manage.py migrate &&
+      gunicorn welcome_home.wsgi:application --bind 0.0.0.0:$PORT
+    rootDirectory: .
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: FIELD_ENCRYPTION_KEY
+        generateValue: true
+      - key: GEMINI_API_KEY
+        generateValue: false # Add your key
+      - key: PYTHON_VERSION
+        value: "3.12.x"
+
