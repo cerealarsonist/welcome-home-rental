@@ -136,10 +136,7 @@ EMAIL_VERIFICATION_OTP_EXPIRY_SECONDS = 300
 
 MAX_UPLOAD_SIZE_MB = 5
 
-EMAIL_BACKEND = os.getenv(
-    'EMAIL_BACKEND',
-    'django.core.mail.backends.console.EmailBackend'  # Render: logs to stdout
-)
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Force console for Render - no SMTP
 DEFAULT_FROM_EMAIL = os.getenv(
     'DEFAULT_FROM_EMAIL',
     'noreply@welcomehome.local'
